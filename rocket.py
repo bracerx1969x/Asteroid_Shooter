@@ -5,6 +5,7 @@ from pygame.math import Vector2
 from pygame_graphics import setup_display, load_image
 from colors_utilities import *
 from math_utilities import *
+from vector_utilities import *
 
 
 class Rocket(pygame.sprite.Sprite):
@@ -43,24 +44,25 @@ class Rocket(pygame.sprite.Sprite):
     def thrusters(self, thrust):
         if thrust:
             self.thrust_on = Rocket.THRUSTERS_ON
+            vel = calc_vector(Rocket.THRUSTER_LIMIT, self._bearing)
+            print(vel, self._bearing)
         else:
             self.thrust_on = Rocket.THRUSTERS_OFF
 
         self.image = self.image_store[self.thrust_on]
         self.rect = self.image.get_rect()
-        self.rect.move((self._position.x, self._position.y))
 
     def is_thrusters(self):
         return self.thrust_on == Rocket.THRUSTERS_ON
 
     def rotate(self, angle):
+        self._bearing = (self._bearing + angle) % 360
         # new_angle = clamp(angle, -Rocket.ROTATION_LIMIT, Rocket.ROTATION_LIMIT)
         # self._bearing = (self._bearing + new_angle) % 360
         # self.rotate_to(self._bearing)
         pass
 
     def rotate_to(self, new_bearing):
-        #
         # self.image = pygame.transform.rotate(self.image_store[self.thrust_on], new_bearing)
         # print(self._position)
         # self.rect = self.image.get_rect()
@@ -68,11 +70,11 @@ class Rocket(pygame.sprite.Sprite):
         pass
 
     def update(self, *args, **kwargs) -> None:
+
+        self.rect.x, self.rect.y = (self._position.x, self._position.y)
         if self.is_thrusters():
-            # print(Rocket.THRUSTERS_ON)
             pass
         else:
-            # print(Rocket.THRUSTERS_OFF)
             pass
 
 
@@ -89,6 +91,8 @@ if __name__ == '__main__':
                          0,
                          [all_sprites, hero_group])
 
+    rocket_ship.rect.x = 500
+    rocket_ship.rect.y = 500
     clock = pygame.time.Clock()
     running = True
     while running:
